@@ -1,74 +1,80 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
+import Searchbar from "@/components/Searchbar";
+import {
+  FlatList,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { fetchMovies } from "@/services/api/fetchMovies";
+import { useEffect, useState } from "react";
+export default function Index() {
+  const [movies, setMovies] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchMovies();
+        setMovies(data);
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
+    };
+    fetchData();
+  }, []);
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View className="flex-1 bg-background">
+      <Image
+        source={require("../../assets/images/BG.png")}
+        className="absolute w-full z-0"
+      />
+      <View className="px-5 ">
+        <Searchbar />
+        <Text className="text-3xl text-white font-semi-bold mt-4">
+          Latest Movies
+        </Text>
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-5">
+        <View className="flex-1 pb-16 ">
+          <FlatList
+            data={movies}
+            renderItem={({ item }) => (
+              <TouchableOpacity className="mt-4 w-[30%]">
+                <Image
+                  source={{
+                    uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                  }}
+                  className="w-full h-32 rounded-lg"
+                />
+                <View className="flex-1">
+                  <Text
+                    className="text-white font-bold text-lg"
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text className="text-[#a8b5db] mt-1">
+                    {item.release_date}
+                  </Text>
+                </View>
+                {/* <Image
+              source={require("../../assets/images/heart.png")}
+              className="w-8 h-8"
+            /> */}
+              </TouchableOpacity>
+            )}
+            numColumns={3}
+            columnWrapperStyle={{
+              justifyContent: "center",
+              gap: 20,
+              marginBottom: 10,
+              paddingRight: 5,
+            }}
+            keyExtractor={(item) => item.id.toString()}
+            scrollEnabled={false}
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
