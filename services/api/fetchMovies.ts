@@ -3,7 +3,7 @@ const options = {
   method: 'GET',
   headers: {
     accept: 'application/json',
-    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzZDdhZmVmNWFlMjdiNzdmZmEwM2Q1ODAyYzE2YWE0NCIsIm5iZiI6MTc0Mzg3MDE4OC42NDIsInN1YiI6IjY3ZjE1OGVjMmY3ZDQzNzAyNzk5OWI1NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.JNHO9MlbU-vbqfd4d1JGg4ODQgxtfWwyIfj5TtkGhCg'
+    Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
   }
 };
 export const fetchMovies = async () => {
